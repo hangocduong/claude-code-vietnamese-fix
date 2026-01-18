@@ -35,4 +35,17 @@ if [[ -z "$CLI_JS" ]]; then
 fi
 
 ACTION="${1:-patch}"
-python3 "$PYTHON_SCRIPT" "$CLI_JS" "$ACTION"
+RESULT=$(python3 "$PYTHON_SCRIPT" "$CLI_JS" "$ACTION")
+EXIT_CODE=$?
+echo "$RESULT"
+
+# Show restart reminder for patch/restore actions
+if [[ $EXIT_CODE -eq 0 && ("$ACTION" == "patch" || "$ACTION" == "restore" || "$ACTION" == "fix" || "$ACTION" == "apply") ]]; then
+    if echo "$RESULT" | grep -q "successfully\|applied"; then
+        echo ""
+        echo -e "\033[1;33m⚠️  Khởi động lại Claude Code để áp dụng thay đổi!\033[0m"
+        echo -e "\033[1;33m   Nhấn Ctrl+C thoát, sau đó chạy: claude\033[0m"
+    fi
+fi
+
+exit $EXIT_CODE

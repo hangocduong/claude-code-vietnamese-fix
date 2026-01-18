@@ -49,5 +49,17 @@ if (!$CliJs) {
     exit 1
 }
 
-python $PythonScript $CliJs $Action
-exit $LASTEXITCODE
+$Result = python $PythonScript $CliJs $Action 2>&1
+$ExitCode = $LASTEXITCODE
+Write-Host $Result
+
+# Show restart reminder for patch/restore actions
+if ($ExitCode -eq 0 -and ($Action -match "patch|restore|fix|apply")) {
+    if ($Result -match "successfully|applied") {
+        Write-Host ""
+        Write-Host "⚠️  Khoi dong lai Claude Code de ap dung thay doi!" -ForegroundColor Yellow
+        Write-Host "   Nhan Ctrl+C thoat, sau do chay: claude" -ForegroundColor Yellow
+    }
+}
+
+exit $ExitCode

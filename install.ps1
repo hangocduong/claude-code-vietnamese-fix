@@ -94,15 +94,20 @@ Write-Info "Applying patch..."
 & "$TargetDir\vietnamese-ime-patch.ps1" patch
 
 Write-Host ""
-Write-Host "+==============================================+" -ForegroundColor Green
-Write-Host "|  Installation complete!                      |" -ForegroundColor Green
-Write-Host "+==============================================+" -ForegroundColor Green
+Write-Host "+================================================================+" -ForegroundColor Green
+Write-Host "|  CAI DAT THANH CONG!                                           |" -ForegroundColor Green
+Write-Host "+================================================================+" -ForegroundColor Green
+Write-Host "|                                                                |" -ForegroundColor Yellow
+Write-Host "|  QUAN TRONG: Thoat va khoi dong lai Claude Code                |" -ForegroundColor Yellow
+Write-Host "|  de ban va co hieu luc!                                        |" -ForegroundColor Yellow
+Write-Host "|                                                                |" -ForegroundColor Yellow
+Write-Host "|  Nhan Ctrl+C de thoat phien hien tai, sau do chay: claude      |" -ForegroundColor Yellow
+Write-Host "|                                                                |" -ForegroundColor Yellow
+Write-Host "+================================================================+" -ForegroundColor Green
 Write-Host ""
-Write-Host "Commands (restart PowerShell first):"
+Write-Host "Lenh kha dung (sau khi restart PowerShell):" -ForegroundColor Cyan
 Write-Host ""
-Write-Host "  claude-vn-patch        Apply/check patch" -ForegroundColor White
-Write-Host "  claude-vn-patch status Check status" -ForegroundColor White
-Write-Host "  claude-update          Update Claude + auto-patch" -ForegroundColor White
-Write-Host ""
-Write-Host "Ban co the go tieng Viet trong Claude Code!" -ForegroundColor Cyan
+Write-Host "  claude-vn-patch        Ap dung ban va" -ForegroundColor White
+Write-Host "  claude-vn-patch status Kiem tra trang thai" -ForegroundColor White
+Write-Host "  claude-update          Cap nhat Claude + tu dong va" -ForegroundColor White
 Write-Host ""
