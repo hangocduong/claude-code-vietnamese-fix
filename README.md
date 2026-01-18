@@ -160,6 +160,11 @@ sua-loi-nhap-lieu-tieng-viet-claude-code-cli/
 
 ## Changelog
 
+### v1.5.0
+
+- Đổi tên dự án thành "Sửa Lỗi Nhập Liệu Tiếng Việt cho Claude Code CLI"
+- Cập nhật tất cả URL
+
 ### v1.4.1
 
 - Thêm thông báo restart sau khi cài đặt/cập nhật
