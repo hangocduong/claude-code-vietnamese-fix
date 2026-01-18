@@ -10,19 +10,20 @@
 
 ## Mục Lục
 
-- [Cài Đặt](#cài-đặt)
+- [Cài Đặt Nhanh](#cài-đặt-nhanh)
 - [Cập Nhật](#cập-nhật)
-- [Sử Dụng](#sử-dụng)
+- [Các Lệnh](#các-lệnh)
 - [Vấn Đề & Giải Pháp](#vấn-đề--giải-pháp)
 - [Xử Lý Sự Cố](#xử-lý-sự-cố)
 - [Yêu Cầu Hệ Thống](#yêu-cầu-hệ-thống)
-- [Chi Tiết Kỹ Thuật](#chi-tiết-kỹ-thuật)
+- [Cách Hoạt Động](#cách-hoạt-động)
+- [Cấu Trúc Dự Án](#cấu-trúc-dự-án)
 - [Đóng Góp](#đóng-góp)
 - [Changelog](#changelog)
 
 ---
 
-## Cài Đặt
+## Cài Đặt Nhanh
 
 ### macOS / Linux
 
@@ -36,7 +37,7 @@ curl -fsSL https://raw.githubusercontent.com/hangocduong/sua-loi-nhap-lieu-tieng
 irm https://raw.githubusercontent.com/hangocduong/sua-loi-nhap-lieu-tieng-viet-claude-code-cli/main/install.ps1 | iex
 ```
 
-### Sau Khi Cài Đặt
+### ⚠️ Quan Trọng: Khởi Động Lại Claude Code
 
 **Bắt buộc khởi động lại Claude Code để bản vá có hiệu lực:**
 
@@ -52,7 +53,6 @@ claude
 ### Cập nhật bản vá (giữ nguyên Claude Code)
 
 ```bash
-# Xóa patch cũ và áp dụng patch mới
 claude-vn-patch restore && claude-vn-patch
 ```
 
@@ -62,11 +62,11 @@ claude-vn-patch restore && claude-vn-patch
 claude-update
 ```
 
-> **Lưu ý:** Sau mỗi lần Claude Code cập nhật, cần chạy lại `claude-vn-patch` hoặc `claude-update`.
+> **Lưu ý:** Sau mỗi lần Claude Code cập nhật, cần chạy lại `claude-vn-patch` hoặc dùng `claude-update`.
 
 ---
 
-## Sử Dụng
+## Các Lệnh
 
 | Lệnh | Mô tả |
 |------|-------|
@@ -83,19 +83,18 @@ claude-update
 
 Bộ gõ tiếng Việt sử dụng kỹ thuật **"backspace-rồi-thay-thế"** để chuyển đổi ký tự (ví dụ: `a` → `á`). Claude Code xử lý phím backspace nhưng không hiển thị ký tự thay thế, dẫn đến mất chữ.
 
-```text
-Gõ: "cộng hòa xã hội"
-Kết quả (trước khi vá): "ộng hòa ã hội" ❌
-```
+| Trước khi vá | Sau khi vá |
+|--------------|------------|
+| Gõ "cộng hòa xã hội" | Gõ "cộng hòa xã hội" |
+| → "ộng hòa ã hội" ❌ | → "cộng hòa xã hội" ✓ |
 
-### Giải pháp
+### Giải pháp (v1.7.0)
 
-Bản vá v1.6.0+ sử dụng **stack-based algorithm** để xử lý đúng thứ tự ký tự, hoạt động ổn định kể cả khi gõ nhanh.
+Bản vá **thay thế hoàn toàn** block xử lý DEL của Claude Code bằng **stack-based algorithm**:
 
-```text
-Gõ: "cộng hòa xã hội"
-Kết quả (sau khi vá): "cộng hòa xã hội" ✓
-```
+- ✅ **Một lần xử lý** - không có double processing
+- ✅ **Xử lý tuần tự** - DEL chỉ ảnh hưởng ký tự ngay trước nó
+- ✅ **Ổn định** - hoạt động tốt kể cả khi gõ nhanh
 
 ---
 
@@ -106,17 +105,19 @@ Kết quả (sau khi vá): "cộng hòa xã hội" ✓
 | Gõ tiếng Việt vẫn lỗi sau khi cài | Đã restart Claude Code chưa? Nhấn `Ctrl+C`, chạy `claude` |
 | `claude-vn-patch: command not found` | Restart terminal hoặc chạy `source ~/.zshrc` (hoặc `~/.bashrc`) |
 | "Could not find Claude Code cli.js" | Cài Claude qua npm: `npm install -g @anthropic-ai/claude-code` |
-| "Could not extract variables" | Phiên bản Claude không tương thích. Mở [issue](https://github.com/hangocduong/sua-loi-nhap-lieu-tieng-viet-claude-code-cli/issues) kèm `claude --version` |
+| "Could not extract variables" | Phiên bản Claude không tương thích. [Mở issue](https://github.com/hangocduong/sua-loi-nhap-lieu-tieng-viet-claude-code-cli/issues) kèm `claude --version` |
+| "Could not find DEL handling block" | Phiên bản Claude thay đổi cấu trúc. [Mở issue](https://github.com/hangocduong/sua-loi-nhap-lieu-tieng-viet-claude-code-cli/issues) |
 | "Patch already applied" | Bản vá đã được áp dụng. Kiểm tra: `claude-vn-patch status` |
-| Lỗi khi gõ nhanh lần đầu | Cập nhật lên v1.6.0+: `claude-vn-patch restore && claude-vn-patch` |
 
 ---
 
 ## Yêu Cầu Hệ Thống
 
-- **Python** 3.6 trở lên
-- **Claude Code** cài qua npm: `npm install -g @anthropic-ai/claude-code`
-- **Hệ điều hành:** Windows, macOS, hoặc Linux
+| Yêu cầu | Chi tiết |
+|---------|----------|
+| **Python** | 3.6 trở lên |
+| **Claude Code** | Cài qua npm: `npm install -g @anthropic-ai/claude-code` |
+| **Hệ điều hành** | Windows, macOS, hoặc Linux |
 
 ### Phiên bản đã kiểm tra
 
@@ -125,14 +126,14 @@ Kết quả (sau khi vá): "cộng hòa xã hội" ✓
 
 ---
 
-## Chi Tiết Kỹ Thuật
+## Cách Hoạt Động
 
 <details>
-<summary>Xem cách hoạt động</summary>
+<summary><strong>Xem chi tiết kỹ thuật</strong></summary>
 
 ### Nguyên nhân lỗi
 
-Code gốc của Claude Code đếm số ký tự DEL (0x7F) rồi thực hiện backspace **trước** khi chèn ký tự mới:
+Code gốc của Claude Code đếm **tất cả** ký tự DEL (0x7F) rồi thực hiện backspace **trước** khi chèn ký tự mới:
 
 ```text
 State: "c" | Input: "o[DEL]ộ" (gõ "cộ" nhanh)
@@ -143,9 +144,9 @@ Code gốc:
 3. Kết quả: "ộ" thay vì "cộ"
 ```
 
-### Giải pháp: Stack-based Algorithm (v1.6.0+)
+### Giải pháp: Block Replacement + Stack Algorithm (v1.7.0)
 
-Xử lý từng ký tự theo thứ tự, dùng stack để theo dõi ký tự nào đã được "tiêu thụ" bởi DEL:
+**v1.7.0** thay thế **toàn bộ** block xử lý DEL bằng thuật toán đúng:
 
 ```javascript
 let _ns = S, _sk = [];  // _ns: new state, _sk: stack
@@ -173,6 +174,13 @@ Bước 3: 'ộ' → push stack → stack=['ộ']
 Bước 4: Insert 'ộ' → State = "c" + "ộ" = "cộ" ✓
 ```
 
+### So sánh v1.6.x vs v1.7.0
+
+| Phiên bản | Cách hoạt động | Hiệu suất |
+|-----------|----------------|-----------|
+| v1.6.x | Chèn patch SAU code gốc → 2 lần xử lý | ⚠️ Double processing |
+| v1.7.0 | Thay thế code gốc → 1 lần xử lý | ✅ Tối ưu |
+
 </details>
 
 ---
@@ -189,7 +197,7 @@ sua-loi-nhap-lieu-tieng-viet-claude-code-cli/
     ├── vietnamese-ime-patch.sh          # Entry point (Bash)
     ├── vietnamese-ime-patch.ps1         # Entry point (PowerShell)
     ├── vietnamese-ime-patch-core.py     # Logic chính
-    ├── patch-block-handler.py           # Block replacement logic (v1.7+)
+    ├── patch-block-handler.py           # Block replacement (v1.7+)
     ├── claude-update-wrapper.sh         # Update helper (Bash)
     └── claude-update-wrapper.ps1        # Update helper (PowerShell)
 ```
@@ -198,7 +206,9 @@ sua-loi-nhap-lieu-tieng-viet-claude-code-cli/
 
 ## Đóng Góp
 
-Mọi đóng góp đều được hoan nghênh! Vui lòng:
+Mọi đóng góp đều được hoan nghênh!
+
+### Quy trình
 
 1. Fork repository
 2. Tạo branch mới: `git checkout -b feature/ten-tinh-nang`
@@ -221,36 +231,30 @@ Nếu gặp lỗi, vui lòng [mở issue](https://github.com/hangocduong/sua-loi
 
 ### v1.7.0
 
-- **Viết lại hoàn toàn**: Thay thế toàn bộ block xử lý DEL (Option B)
-- Loại bỏ double processing - chỉ một lần xử lý, một lần cập nhật UI
-- Tối ưu hiệu suất và độ ổn định
-- Modular code structure
+- **Block Replacement**: Thay thế toàn bộ block xử lý DEL (không còn double processing)
+- Tối ưu hiệu suất - chỉ 1 lần xử lý, 1 lần cập nhật UI
+- Modular code structure với `patch-block-handler.py`
 
 ### v1.6.2
 
-- Sửa lỗi: Chỉ chạy patch khi input có DEL, tránh conflict với xử lý ký tự thường
+- Chỉ chạy patch khi input có DEL, tránh conflict với xử lý ký tự thường
 
 ### v1.6.1
 
-- Sửa lỗi: LUÔN update UI với giá trị đúng (bỏ điều kiện if gây skip)
+- Luôn update UI với giá trị đúng (bỏ điều kiện if gây skip)
 
 ### v1.6.0
 
-- Viết lại hoàn toàn thuật toán với proper JavaScript scoping
-- Sửa lỗi mất ký tự khi gõ nhanh lần đầu tiên
+- Viết lại thuật toán với proper JavaScript scoping
+- Sửa lỗi mất ký tự khi gõ nhanh lần đầu
 
 ### v1.5.0
 
-- Đổi tên dự án
-- Cập nhật tất cả URL
-
-### v1.4.1
-
-- Thêm thông báo restart sau khi cài đặt/cập nhật
+- Đổi tên dự án và cập nhật URL
 
 ### v1.4.0
 
-- Sửa lỗi mất chữ đầu từ khi gõ nhanh (stack-based algorithm)
+- Stack-based algorithm sửa lỗi mất chữ đầu từ khi gõ nhanh
 
 ### v1.2.0
 
@@ -269,7 +273,7 @@ Nếu gặp lỗi, vui lòng [mở issue](https://github.com/hangocduong/sua-loi
 ## Ghi Công
 
 - Ý tưởng ban đầu: [manhit96/claude-code-vietnamese-fix](https://github.com/manhit96/claude-code-vietnamese-fix)
-- Stack-based algorithm & dynamic extraction: Dự án này
+- Stack-based algorithm & block replacement: Dự án này
 
 ---
 
