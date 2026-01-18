@@ -229,6 +229,15 @@ Nếu gặp lỗi, vui lòng [mở issue](https://github.com/hangocduong/sua-loi
 
 ## Changelog
 
+### v1.7.2
+
+- Sửa regex pattern để khớp với cấu trúc thực tế của Claude Code
+- Giữ nguyên prefix condition (`!QA.backspace&&!QA.delete`) trong replacement
+
+### v1.7.1
+
+- Đổi tên module `patch-block-handler.py` → `patch_block_handler.py` (Python không cho phép dấu gạch ngang trong tên module)
+
 ### v1.7.0
 
 - **Block Replacement**: Thay thế toàn bộ block xử lý DEL (không còn double processing)
