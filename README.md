@@ -115,27 +115,29 @@ Dùng stack để tính số DEL thực sự ảnh hưởng state gốc:
 - Mỗi DEL: pop stack (hoặc xóa từ original nếu stack rỗng)
 - Khôi phục ký tự bị xóa nhầm, rồi chèn ký tự thay thế
 
-### Code được chèn (v1.4.0+)
+### Code được chèn (v1.6.0+)
 
 ```javascript
-// Stack approach: đếm DEL nào ảnh hưởng original vs consume input chars
-let _s=0, _od=0;
-for(let i=0; i<l.length; i++) {
-  l[i]==="\x7f" ? (_s>0 ? _s-- : _od++) : _s++;
-}
-let _nd = (l.match(/\x7f/g)||[]).length;
-let _wd = _nd - _od;  // Số ký tự bị xóa nhầm
+// Stack-based: xử lý từng ký tự, chỉ dùng biến global (S, l, Q, T)
+let _ns = S, _sk = [];  // _ns: new state, _sk: stack
 
-// Khôi phục ký tự bị xóa nhầm
-if(_wd > 0) {
-  let _r = S.text.slice(S.text.length-_nd, S.text.length-_od);
-  for(const c of _r) CA = CA.insert(c);
+for(const c of l) {
+  if(c === "\x7f") {  // DEL char
+    if(_sk.length > 0) _sk.pop();     // DEL tiêu thụ ký tự pending
+    else _ns = _ns.backspace();        // DEL ảnh hưởng state gốc
+  } else {
+    _sk.push(c);                       // Ký tự thường: push stack
+  }
 }
 
-// Chèn ký tự sau DEL cuối
-let _ld = l.lastIndexOf("\x7f");
-let _a = _ld>=0 ? l.slice(_ld+1) : "";
-for(const c of _a) CA = CA.insert(c);
+// Chèn các ký tự còn lại trong stack
+for(const c of _sk) _ns = _ns.insert(c);
+
+// Cập nhật UI nếu có thay đổi
+if(!S.equals(_ns)) {
+  if(S.text !== _ns.text) Q(_ns.text);
+  T(_ns.offset);
+}
 ```
 
 </details>
@@ -159,6 +161,11 @@ sua-loi-nhap-lieu-tieng-viet-claude-code-cli/
 ---
 
 ## Changelog
+
+### v1.6.0
+
+- Viết lại hoàn toàn thuật toán xử lý IME với proper JavaScript scoping
+- Sửa lỗi mất ký tự khi gõ nhanh lần đầu tiên
 
 ### v1.5.0
 

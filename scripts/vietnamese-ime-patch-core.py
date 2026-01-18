@@ -16,10 +16,10 @@ def get_version(content: str) -> str:
     return m.group(1) if m else "unknown"
 
 def is_patched(content: str) -> bool:
-    # Check for v1.3 (lastIndexOf) or v1.4+ (stack-based _od/_wd) patch markers
-    return ('_od=0' in content and '_wd=' in content) or \
-           ('_lastDel=' in content and 'slice(' in content) or \
-           ('_vn=' in content and 'replace(/' in content)
+    # v1.6: _ns/_sk, v1.4: _od/_wd, v1.3: _lastDel, v1.0: _vn
+    return ('_ns=' in content and '_sk=' in content) or \
+           ('_od=0' in content and '_wd=' in content) or \
+           ('_lastDel=' in content) or ('_vn=' in content)
 
 def extract_variables(content: str) -> Optional[Dict]:
     """Extract variable names dynamically from minified code."""
@@ -93,15 +93,14 @@ def find_insertion_point(content: str, vars: dict) -> Optional[int]:
     return None
 
 def create_patch(vars: dict) -> str:
-    """Vietnamese IME fix: handle chars before DEL that weren't inserted yet."""
-    inp, st, cur = vars["input"], vars["state"], vars["cur_state"]
+    """v1.6: Stack-based IME fix with proper scoping. Uses only global vars (S, l, Q, T)."""
+    inp, cur = vars["input"], vars["cur_state"]
     tfn, ofn = vars["text_fn"], vars["offset_fn"]
-    # Stack approach: count DELs that should affect original vs consume input chars
-    return (f'let _s=0,_od=0;for(let _i=0;_i<{inp}.length;_i++){{{inp}[_i]==="{DEL_CHAR}"?_s>0?_s--:_od++:_s++}}'
-            f'let _nd=({inp}.match(/{DEL_CHAR}/g)||[]).length,_wd=_nd-_od;'
-            f'if(_wd>0){{let _r={cur}.text.slice({cur}.text.length-_nd,{cur}.text.length-_od);for(const _c of _r){st}={st}.insert(_c)}}'
-            f'let _ld={inp}.lastIndexOf("{DEL_CHAR}"),_a=_ld>=0?{inp}.slice(_ld+1):"";for(const _c of _a){st}={st}.insert(_c);'
-            f'if(!{cur}.equals({st})){{if({cur}.text!=={st}.text){tfn}({st}.text);{ofn}({st}.offset)}}')
+    # Self-contained block with own scope - doesn't reference CA at all
+    return (f'{{let _ns={cur},_sk=[];'
+            f'for(const _c of {inp}){{if(_c==="{DEL_CHAR}"){{if(_sk.length>0)_sk.pop();else _ns=_ns.backspace()}}else _sk.push(_c)}}'
+            f'for(const _c of _sk)_ns=_ns.insert(_c);'
+            f'if(!{cur}.equals(_ns)){{if({cur}.text!==_ns.text){tfn}(_ns.text);{ofn}(_ns.offset)}}}}')
 
 def patch(cli_js: Path) -> bool:
     content = cli_js.read_text('utf-8')
