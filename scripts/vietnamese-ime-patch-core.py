@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Claude Code Vietnamese IME Patch - Core logic.
-v1.7.2: Block replacement with prefix condition preservation.
+v1.7.3: Block replacement with prefix condition preservation.
 Original fix: https://github.com/manhit96/claude-code-vietnamese-fix
 """
 import re
@@ -118,7 +118,7 @@ def patch(cli_js: Path) -> bool:
     patch_code = block_handler.create_replacement_patch(vars, prefix_cond)
     new_content = content[:start_pos] + patch_code + content[end_pos:]
     cli_js.write_text(new_content, 'utf-8')
-    print("Patch applied successfully! (v1.7.2)")
+    print("Patch applied successfully! (v1.7.3)")
     return True
 
 def restore(cli_js: Path) -> bool:

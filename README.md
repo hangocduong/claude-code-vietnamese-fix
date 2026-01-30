@@ -229,6 +229,10 @@ Nếu gặp lỗi, vui lòng [mở issue](https://github.com/hangocduong/sua-loi
 
 ## Changelog
 
+### v1.7.3
+
+- Thêm CLAUDE.md để hướng dẫn Claude CLI dùng đúng lệnh update (npm thay vì brew)
+
 ### v1.7.2
 
 - Sửa regex pattern để khớp với cấu trúc thực tế của Claude Code
